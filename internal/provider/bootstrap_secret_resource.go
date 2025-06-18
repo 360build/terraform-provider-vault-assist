@@ -43,6 +43,9 @@ func (r *BootstrapSecretResource) Schema(_ context.Context, _ resource.SchemaReq
 			"path": schema.StringAttribute{
 				Required: true,
 			},
+			"mount": schema.StringAttribute{
+				Required: true,
+			},
 		},
 	}
 }
@@ -72,6 +75,7 @@ func (r *BootstrapSecretResource) Configure(_ context.Context, req resource.Conf
 type BootstrapSecretResourceModel struct {
 	Created types.Bool   `tfsdk:"created"`
 	Path    types.String `tfsdk:"path"`
+	Mount   types.String `tfsdk:"mount"`
 }
 
 func (r *BootstrapSecretResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -83,7 +87,11 @@ func (r *BootstrapSecretResource) Create(ctx context.Context, req resource.Creat
 		return
 	}
 
-	secret, err := r.client.ReadSecret(plan.Path.ValueString())
+	// Construct the path for the secret
+	path := fmt.Sprintf("%s/data/%s", plan.Mount.ValueString(), plan.Path.ValueString())
+
+	// Check if the secret already exists
+	secret, err := r.client.ReadSecret(path)
 	fmt.Print(err)
 	fmt.Println(secret)
 
@@ -93,12 +101,13 @@ func (r *BootstrapSecretResource) Create(ctx context.Context, req resource.Creat
 		},
 		"data": map[string]interface{}{},
 	}
-	r.client.WriteSecret(plan.Path.ValueString(), emptySecret)
+	r.client.WriteSecret(path, emptySecret)
 
 	// Set the new state using the struct model
 	state := BootstrapSecretResourceModel{
 		Created: types.BoolValue(true),
 		Path:    plan.Path,
+		Mount:   plan.Mount,
 	}
 	resp.State.Set(ctx, &state)
 }

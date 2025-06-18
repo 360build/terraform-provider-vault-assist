@@ -94,5 +94,6 @@ func (p *vaultassistProvider) DataSources(_ context.Context) []func() datasource
 func (p *vaultassistProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewBootstrapSecretResource,
+		NewPatchSecretResource,
 	}
 }

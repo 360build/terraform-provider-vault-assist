@@ -1,6 +1,7 @@
 package vaultclient
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -61,4 +62,15 @@ func (v *VaultClient) ReadSecret(path string) (map[string]interface{}, error) {
 func (v *VaultClient) WriteSecret(path string, data map[string]interface{}) error {
 	_, err := v.client.Logical().Write(path, data)
 	return err
+}
+
+// PatchSecret updates a secret in Vault using JSON Merge Patch
+func (v *VaultClient) PatchSecret(path string, data map[string]interface{}) error {
+	// Use the JSONMergePatch method directly
+	_, err := v.client.Logical().JSONMergePatch(context.Background(), path, data)
+	if err != nil {
+		return fmt.Errorf("failed to patch secret: %w", err)
+	}
+
+	return nil
 }
