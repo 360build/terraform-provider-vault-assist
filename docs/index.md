@@ -33,6 +33,6 @@ The `vaultassist_bootstrap_secret` resource is used to bootstrap a secret in Vau
 
 ```hcl
 resource "vaultassist_bootstrap_secret" "example" {
-  path  = "testing/io-whitelabel/env"
-  mount = "io-whitelabel"
+  path  = ""
+  mount = ""
 }
