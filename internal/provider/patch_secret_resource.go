@@ -116,7 +116,14 @@ func (r *PatchSecretResource) Create(ctx context.Context, req resource.CreateReq
 			plan.Key.ValueString(): plan.Value.ValueString(),
 		},
 	}
-	r.client.PatchSecret(path, patchSecret)
+
+	if err := r.client.PatchSecret(path, patchSecret); err != nil {
+		resp.Diagnostics.AddError(
+			"Error Updating Secret",
+			fmt.Sprintf("Could not update secret at path '%s', unexpected error: %s", path, err.Error()),
+		)
+		return
+	}
 
 	// Set the new state using the struct model
 	state := PatchSecretResourceModel{

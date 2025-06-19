@@ -66,11 +66,12 @@ func (v *VaultClient) WriteSecret(path string, data map[string]interface{}) erro
 
 // PatchSecret updates a secret in Vault using JSON Merge Patch
 func (v *VaultClient) PatchSecret(path string, data map[string]interface{}) error {
-	// Use the JSONMergePatch method directly
-	_, err := v.client.Logical().JSONMergePatch(context.Background(), path, data)
+	resp, err := v.client.Logical().JSONMergePatch(context.Background(), path, data)
 	if err != nil {
 		return fmt.Errorf("failed to patch secret: %w", err)
 	}
-
+	if resp == nil {
+		return fmt.Errorf("patch secret returned nil response for path: %s", path)
+	}
 	return nil
 }
