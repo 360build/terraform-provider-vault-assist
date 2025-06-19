@@ -31,8 +31,3 @@ The `vaultassist_bootstrap_secret` resource is used to bootstrap a secret in Vau
 
 ## Example Usage
 
-```hcl
-resource "vaultassist_bootstrap_secret" "example" {
-  path  = ""
-  mount = ""
-}
